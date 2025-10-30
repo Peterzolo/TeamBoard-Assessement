@@ -10,6 +10,11 @@ import { Inject, Optional } from '@nestjs/common';
 import { IUserLookupService } from '../../../core/interfaces/user-lookup.interface';
 import { UserRole } from '../../users/entities/user.entity';
 import { ModifyMembersDto } from '../dto/modify-members.dto';
+import { Queue } from 'bullmq';
+import {
+  projectAssignedTemplate,
+  projectUnassignedTemplate,
+} from '../../../core/templates/email/project-templates';
 
 @Injectable()
 export class ProjectsService {
@@ -18,6 +23,7 @@ export class ProjectsService {
     @Optional()
     @Inject('IUserLookupService')
     private readonly userLookupService?: IUserLookupService,
+    @Inject('EMAIL_QUEUE') private readonly emailQueue?: Queue,
   ) {}
 
   create(
@@ -141,6 +147,34 @@ export class ProjectsService {
         .filter((x) => x.u && x.u.role !== UserRole.SUPER_ADMIN)
         .map((x) => x.idStr);
       memberIds = allowed.map((m) => new Types.ObjectId(m));
+      // send assignment emails
+      const project = await this.findOne(id);
+      if (this.emailQueue) {
+        await Promise.all(
+          users
+            .map((u) => u)
+            .filter(
+              (u): u is NonNullable<typeof u> =>
+                !!u && u.role !== UserRole.SUPER_ADMIN,
+            )
+            .map((u) => {
+              const tpl = projectAssignedTemplate({
+                projectName: project.name,
+              });
+              return this.emailQueue.add(
+                'send-email',
+                {
+                  to: u.email,
+                  subject: tpl.subject,
+                  html: tpl.html,
+                  type: 'project_assigned',
+                  data: { projectId: id },
+                },
+                { attempts: 5, backoff: { type: 'exponential', delay: 5000 } },
+              );
+            }),
+        );
+      }
     }
     const update: UpdateQuery<ProjectDocument> = {
       $addToSet: { members: { $each: memberIds } } as any,
@@ -171,6 +205,34 @@ export class ProjectsService {
         .filter((x) => x.u && x.u.role !== UserRole.SUPER_ADMIN)
         .map((x) => x.idStr);
       memberIds = allowed.map((m) => new Types.ObjectId(m));
+      // send unassignment emails
+      const project = await this.findOne(id);
+      if (this.emailQueue) {
+        await Promise.all(
+          users
+            .map((u) => u)
+            .filter(
+              (u): u is NonNullable<typeof u> =>
+                !!u && u.role !== UserRole.SUPER_ADMIN,
+            )
+            .map((u) => {
+              const tpl = projectUnassignedTemplate({
+                projectName: project.name,
+              });
+              return this.emailQueue.add(
+                'send-email',
+                {
+                  to: u.email,
+                  subject: tpl.subject,
+                  html: tpl.html,
+                  type: 'project_unassigned',
+                  data: { projectId: id },
+                },
+                { attempts: 5, backoff: { type: 'exponential', delay: 5000 } },
+              );
+            }),
+        );
+      }
     }
     const update: UpdateQuery<ProjectDocument> = {
       $pullAll: { members: memberIds } as any,

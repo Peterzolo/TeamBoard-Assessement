@@ -7,11 +7,13 @@ import { ProjectsService } from './services/projects.service';
 import { Project, ProjectSchema } from './entities/project.entity';
 import { ProjectRepository } from './repositories/project.repository';
 import { UsersModule } from '../users/users.module';
+import { QueueModule } from '../../core/queue/queue.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Project.name, schema: ProjectSchema }]),
     UsersModule,
+    QueueModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -25,5 +27,3 @@ import { UsersModule } from '../users/users.module';
   providers: [ProjectsService, ProjectRepository],
 })
 export class ProjectsModule {}
-
-
