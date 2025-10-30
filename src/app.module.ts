@@ -6,6 +6,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { TeamsModule } from './modules/teams/teams.module';
+import { ProjectsModule } from './modules/projects/projects.module';
 import { HealthController } from './core/controllers/health.controller';
 import { MemoryManagerService } from './core/services/memory-manager.service';
 import { MemoryMonitorService } from './core/services/memory-monitor.service';
@@ -23,6 +24,7 @@ import { MemoryMonitorService } from './core/services/memory-monitor.service';
     AuthModule,
     UsersModule,
     TeamsModule,
+    ProjectsModule,
   ],
   controllers: [HealthController],
   providers: [MemoryManagerService, MemoryMonitorService],

@@ -63,6 +63,8 @@ export class TeamsController {
   }
 
   @Put(':id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserRole.SUPER_ADMIN)
   @UsePipes(
     new ValidationPipe({
       whitelist: true,
@@ -76,6 +78,8 @@ export class TeamsController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserRole.SUPER_ADMIN)
   remove(@Param('id') id: string) {
     return this.teamsService.softDelete(id);
   }
