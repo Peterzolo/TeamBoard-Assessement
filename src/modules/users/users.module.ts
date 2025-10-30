@@ -10,6 +10,7 @@ import { BootstrapService } from './services/bootstrap.service';
 import { UserLookupService } from './services/user-lookup.service';
 import { CoreModule } from 'src/core/core.module';
 import { IUserLookupService } from '../../core/interfaces/user-lookup.interface';
+import { QueueModule } from '../../core/queue/queue.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { IUserLookupService } from '../../core/interfaces/user-lookup.interface'
       }),
       inject: [ConfigService],
     }),
+    QueueModule,
   ],
   controllers: [UsersController],
   providers: [

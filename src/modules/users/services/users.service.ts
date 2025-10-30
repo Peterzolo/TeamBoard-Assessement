@@ -13,6 +13,8 @@ import { QueryUserDto } from '../dto/query-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { EmailService } from '../../../core/services/email.service';
+import { Inject } from '@nestjs/common';
+import { Queue } from 'bullmq';
 import {
   emailVerificationTemplate,
   adminCredentialsTemplate,
@@ -26,6 +28,7 @@ export class UsersService extends BaseService<UserDocument, User> {
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService,
+    @Inject('EMAIL_QUEUE') private readonly emailQueue: Queue,
   ) {
     super(userRepository);
   }
@@ -84,16 +87,17 @@ export class UsersService extends BaseService<UserDocument, User> {
         verificationLink,
         userEmail: inviteDto.email,
       });
-      const emailSent = await this.emailService.sendEmail(
-        inviteDto.email,
-        template,
+      await this.emailQueue.add(
+        'send-email',
+        {
+          to: inviteDto.email,
+          subject: template.subject,
+          html: template.html,
+          type: 'email_verification',
+          data: { email: inviteDto.email },
+        },
+        { attempts: 5, backoff: { type: 'exponential', delay: 5000 } },
       );
-
-      if (!emailSent) {
-        throw new ServiceUnavailableException(
-          'Failed to send verification email. Please try again later.',
-        );
-      }
 
       return { user, emailVerificationToken };
     }
@@ -110,16 +114,17 @@ export class UsersService extends BaseService<UserDocument, User> {
       verificationLink,
       userEmail: inviteDto.email,
     });
-    const emailSent = await this.emailService.sendEmail(
-      inviteDto.email,
-      template,
+    await this.emailQueue.add(
+      'send-email',
+      {
+        to: inviteDto.email,
+        subject: template.subject,
+        html: template.html,
+        type: 'email_verification',
+        data: { email: inviteDto.email },
+      },
+      { attempts: 5, backoff: { type: 'exponential', delay: 5000 } },
     );
-
-    if (!emailSent) {
-      throw new ServiceUnavailableException(
-        'Failed to send verification email. Please try again later.',
-      );
-    }
 
     return { user, emailVerificationToken };
   }
