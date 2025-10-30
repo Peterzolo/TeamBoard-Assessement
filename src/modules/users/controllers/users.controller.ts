@@ -8,6 +8,8 @@ import {
   Delete,
   UseGuards,
   Query,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '../../auth/guards/auth.guard';
 import { UpdateQuery } from 'mongoose';
@@ -69,11 +71,15 @@ export class UsersController {
 
   // Endpoint for user to complete their profile after email verification
   @Post('complete-profile')
+  @UsePipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      skipMissingProperties: false,
+      transform: true,
+    }),
+  )
   async completeProfile(@Body() body: CompleteProfileRequestDto) {
-    console.log(
-      '🎯 [PUBLIC_ENDPOINT] completeProfile accessed WITHOUT authentication!',
-    );
-
     return this.usersService.completeUserProfile(body);
   }
 }

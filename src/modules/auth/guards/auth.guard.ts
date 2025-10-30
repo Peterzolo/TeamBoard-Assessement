@@ -8,18 +8,20 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { UserRole } from '../../users/entities/user.entity';
 import { IUserLookupService } from '../../../core/interfaces/user-lookup.interface';
 
 interface AccessTokenPayload {
   sub: string;
   email: string;
-  role: string; // add role
+  role: UserRole;
   type: 'access';
 }
 
+type GuardUser = { _id: string; email: string; role: UserRole };
+
 @Injectable()
 export class AuthGuard implements CanActivate {
-  // Debugging line
   constructor(
     private readonly jwtService: JwtService,
     @Optional()
@@ -28,15 +30,14 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest<Request>();
+    const request = context
+      .switchToHttp()
+      .getRequest<Request & { user?: GuardUser }>();
 
     const token = this.extractTokenFromRequest(request);
-
     if (!token) {
       throw new UnauthorizedException('Access token is required');
     }
-
-    console.log('Extracted token:', token); // Debugging line
 
     try {
       const payload =
@@ -48,25 +49,20 @@ export class AuthGuard implements CanActivate {
 
       // If userLookupService is available, fetch the full user document
       if (this.userLookupService) {
-        try {
-          const fullUser = await this.userLookupService.findUserById(payload.sub);
-          if (!fullUser) {
-            throw new UnauthorizedException('User not found');
-          }
-          // Attach full user info to request for use in controllers
-          request['user'] = fullUser;
-        } catch (error) {
-          // If user fetch fails, fall back to basic user info
-          console.warn('Failed to fetch full user, using basic info:', error.message);
-          request['user'] = {
-            _id: payload.sub,
-            email: payload.email,
-            role: payload.role,
-          };
+        const fullUser = await this.userLookupService.findUserById(payload.sub);
+        if (!fullUser) {
+          throw new UnauthorizedException('User not found');
         }
+        request.user = {
+          _id:
+            (fullUser as any)._id?.toString?.() ??
+            String((fullUser as any)._id),
+          email: (fullUser as any).email,
+          role: (fullUser as any).role as UserRole,
+        };
       } else {
         // Fallback to basic user info when userLookupService is not available
-        request['user'] = {
+        request.user = {
           _id: payload.sub,
           email: payload.email,
           role: payload.role,
@@ -75,8 +71,6 @@ export class AuthGuard implements CanActivate {
 
       return true;
     } catch (error: unknown) {
-      console.error('JWT Verification Error:', error);
-
       if (error instanceof Error) {
         if (error.name === 'TokenExpiredError') {
           throw new UnauthorizedException('Token has expired');

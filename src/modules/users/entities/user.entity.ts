@@ -4,13 +4,14 @@ import { Document, Types } from 'mongoose';
 export type UserDocument = User &
   Document & {
     _id: Types.ObjectId;
-    id: string; // Virtual property provided by Mongoose
   };
 
 export enum UserRole {
   SUPER_ADMIN = 'Super-admin',
   ADMIN = 'Admin',
-  TEAM_MEMBER = 'TEAM_MEMBER',
+  PROJECT_MANAGER = 'Project-manager',
+  TEAM_MEMBER = 'Team-member',
+  TEAM_LEAD = 'Team-lead',
 }
 
 @Schema({

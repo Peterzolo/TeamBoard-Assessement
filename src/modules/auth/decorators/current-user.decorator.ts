@@ -1,7 +1,7 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { UserRole, UserDocument } from '../../users/entities/user.entity';
+import { UserRole } from '../../users/entities/user.entity';
 
-export interface CurrentUser extends UserDocument {
+export interface CurrentUser {
   _id: string;
   email: string;
   role: UserRole;

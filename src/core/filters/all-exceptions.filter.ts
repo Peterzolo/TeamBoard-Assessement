@@ -16,15 +16,24 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
-    const status =
-      exception instanceof HttpException
-        ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
+    // Default status/message
+    let status = HttpStatus.INTERNAL_SERVER_ERROR;
+    let message: any = 'Internal server error';
 
-    const message =
-      exception instanceof HttpException
-        ? exception.getResponse()
-        : 'Internal server error';
+    if (exception instanceof HttpException) {
+      status = exception.getStatus();
+      message = exception.getResponse();
+    } else if (
+      typeof exception === 'object' &&
+      exception !== null &&
+      (exception as any).name === 'ValidationError'
+    ) {
+      // Mongoose ValidationError → 400 with field messages
+      status = HttpStatus.BAD_REQUEST;
+      const errors = (exception as any).errors || {};
+      const details = Object.keys(errors).map((k) => errors[k]?.message || k);
+      message = details.length ? details : 'Validation failed';
+    }
 
     // This handles cases where class-validator returns a complex object
     const errorMessage =
