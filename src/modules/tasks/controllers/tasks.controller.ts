@@ -66,15 +66,7 @@ export class TasksController {
   @Put(':id')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.PROJECT_MANAGER)
-  @UsePipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      skipMissingProperties: true,
-      transform: true,
-    }),
-  )
-  update(@Param('id') id: string, @Body() dto: UpdateTaskDto) {
+  update(@Param('id') id: string, @Body() dto: any) {
     return this.tasksService.update(id, dto).then(toTaskResponse);
   }
 

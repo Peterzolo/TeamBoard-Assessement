@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: teamboard-backend
+    env: node
+    plan: starter
+    region: oregon
+    buildCommand: yarn install && NODE_OPTIONS='--max-old-space-size=2048' yarn build
+    startCommand: yarn start:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_OPTIONS
+        value: --max-old-space-size=2048 --expose-gc
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+

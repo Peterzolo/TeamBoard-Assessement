@@ -63,15 +63,7 @@ export class ProjectsController {
   @Put(':id')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.PROJECT_MANAGER)
-  @UsePipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      skipMissingProperties: true,
-      transform: true,
-    }),
-  )
-  update(@Param('id') id: string, @Body() dto: UpdateProjectDto) {
+  update(@Param('id') id: string, @Body() dto: any) {
     return this.projectsService.update(id, dto).then(toProjectResponse);
   }
 

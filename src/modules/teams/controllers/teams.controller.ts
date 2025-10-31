@@ -65,15 +65,7 @@ export class TeamsController {
   @Put(':id')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.SUPER_ADMIN)
-  @UsePipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      skipMissingProperties: true,
-      transform: true,
-    }),
-  )
-  update(@Param('id') id: string, @Body() dto: UpdateTeamDto) {
+  update(@Param('id') id: string, @Body() dto: any) {
     return this.teamsService.update(id, dto).then(toTeamResponse);
   }
 
