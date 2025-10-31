@@ -17,7 +17,7 @@ async function bootstrap() {
     ? process.env.ALLOWED_ORIGINS_PRODUCTION?.split(',') || [
         'https://teamboard-application',
       ]
-    : process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'];
+    : process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:5173'];
 
   app.enableCors({
     origin: allowedOrigins,

@@ -1,0 +1,1230 @@
+{
+	"info": {
+		"_postman_id": "teamboard-api-v1",
+		"name": "TeamBoard API v1",
+		"description": "Complete API documentation for TeamBoard Assessment Backend\n\n## Base URL\n`http://localhost:5000/api/v1`\n\n## Authentication\nMost endpoints require JWT authentication. Login to get an access token and include it in the Authorization header.\n\n## Features\n- User Management\n- Authentication & Authorization\n- Team Management\n- Project Management\n- Task Management\n- Real-time Notifications\n\n## Rate Limiting\nPlease respect rate limits and use tokens responsibly.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "teamboard-backend"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "Health",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": ["{{baseUrl}}"],
+							"path": [""]
+						},
+						"description": "Basic health check endpoint"
+					},
+					"response": []
+				},
+				{
+					"name": "Detailed Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						},
+						"description": "Detailed health check with memory usage and system stats"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('accessToken', response.accessToken);",
+									"    pm.environment.set('refreshToken', response.refreshToken);",
+									"    pm.environment.set('userId', response.user._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						},
+						"description": "Login with email and password. Returns access token and refresh token. Tokens are also set as httpOnly cookies."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/me",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "me"]
+						},
+						"description": "Get currently authenticated user details"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/refresh",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "refresh"]
+						},
+						"description": "Refresh access token using refresh token"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/logout",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "logout"]
+						},
+						"description": "Logout and clear authentication cookies"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Email",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/verify-email?token=VERIFICATION_TOKEN_HERE",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "verify-email"],
+							"query": [
+								{
+									"key": "token",
+									"value": "VERIFICATION_TOKEN_HERE"
+								}
+							]
+						},
+						"description": "Verify email address using verification token"
+					},
+					"response": []
+				},
+				{
+					"name": "Resend Verification Email",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/resend-verification",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "resend-verification"]
+						},
+						"description": "Resend email verification link"
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot Password",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/forgot-password",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "forgot-password"]
+						},
+						"description": "Request password reset email"
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"token\": \"RESET_TOKEN_HERE\",\n  \"newPassword\": \"newPassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/reset-password",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "reset-password"]
+						},
+						"description": "Reset password using reset token"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users?page=1&limit=10&role=ADMIN",
+							"host": ["{{baseUrl}}"],
+							"path": ["users"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Items per page"
+								},
+								{
+									"key": "role",
+									"value": "ADMIN",
+									"description": "Filter by role",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get paginated list of users. Requires authentication and appropriate role."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "USER_ID_HERE"
+								}
+							]
+						},
+						"description": "Get user details by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"phoneNumber\": \"+1234567890\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "USER_ID_HERE"
+								}
+							]
+						},
+						"description": "Update user details. Requires SUPER_ADMIN role."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "USER_ID_HERE"
+								}
+							]
+						},
+						"description": "Delete a user. Requires SUPER_ADMIN role."
+					},
+					"response": []
+				},
+				{
+					"name": "Invite User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"newuser@example.com\",\n  \"role\": \"TEAM_MEMBER\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/invite",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "invite"]
+						},
+						"description": "Invite a new user by email. Requires SUPER_ADMIN role. Returns verification token for testing."
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Profile",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"token\": \"VERIFICATION_TOKEN_HERE\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"password\": \"securePassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/complete-profile",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "complete-profile"]
+						},
+						"description": "Complete user profile after email verification. Public endpoint."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Teams",
+			"item": [
+				{
+					"name": "Create Team",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Development Team\",\n  \"description\": \"Team responsible for product development\",\n  \"members\": [\"USER_ID_1\", \"USER_ID_2\"]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/teams",
+							"host": ["{{baseUrl}}"],
+							"path": ["teams"]
+						},
+						"description": "Create a new team. Requires SUPER_ADMIN role."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Teams",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/teams?page=1&limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["teams"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Get paginated list of teams. Public endpoint."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Team By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/teams/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["teams", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "TEAM_ID_HERE"
+								}
+							]
+						},
+						"description": "Get team details by ID. Public endpoint."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Team",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Team Name\",\n  \"description\": \"Updated description\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/teams/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["teams", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "TEAM_ID_HERE"
+								}
+							]
+						},
+						"description": "Update team details. Requires SUPER_ADMIN role."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Team",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/teams/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["teams", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "TEAM_ID_HERE"
+								}
+							]
+						},
+						"description": "Soft delete a team. Requires SUPER_ADMIN role."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Projects",
+			"item": [
+				{
+					"name": "Create Project",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Project Alpha\",\n  \"description\": \"New project description\",\n  \"teamId\": \"TEAM_ID_HERE\",\n  \"startDate\": \"2024-01-01\",\n  \"endDate\": \"2024-12-31\",\n  \"status\": \"PLANNING\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/projects",
+							"host": ["{{baseUrl}}"],
+							"path": ["projects"]
+						},
+						"description": "Create a new project. Requires SUPER_ADMIN, ADMIN, or PROJECT_MANAGER role."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Projects",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/projects?page=1&limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["projects"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Get paginated list of projects. Public endpoint."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Project By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/projects/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["projects", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "PROJECT_ID_HERE"
+								}
+							]
+						},
+						"description": "Get project details by ID. Public endpoint."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Project",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Project Name\",\n  \"description\": \"Updated description\",\n  \"status\": \"IN_PROGRESS\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/projects/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["projects", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "PROJECT_ID_HERE"
+								}
+							]
+						},
+						"description": "Update project details. Requires SUPER_ADMIN, ADMIN, or PROJECT_MANAGER role."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Project",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/projects/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["projects", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "PROJECT_ID_HERE"
+								}
+							]
+						},
+						"description": "Soft delete a project. Requires SUPER_ADMIN, ADMIN, or PROJECT_MANAGER role."
+					},
+					"response": []
+				},
+				{
+					"name": "Add Members to Project",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"memberIds\": [\"USER_ID_1\", \"USER_ID_2\"]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/projects/:id/members",
+							"host": ["{{baseUrl}}"],
+							"path": ["projects", ":id", "members"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "PROJECT_ID_HERE"
+								}
+							]
+						},
+						"description": "Add members to a project. Requires SUPER_ADMIN, ADMIN, or PROJECT_MANAGER role."
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Members from Project",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"memberIds\": [\"USER_ID_1\"]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/projects/:id/members",
+							"host": ["{{baseUrl}}"],
+							"path": ["projects", ":id", "members"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "PROJECT_ID_HERE"
+								}
+							]
+						},
+						"description": "Remove members from a project. Requires SUPER_ADMIN, ADMIN, or PROJECT_MANAGER role."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tasks",
+			"item": [
+				{
+					"name": "Create Task",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Implement user authentication\",\n  \"description\": \"Set up JWT authentication flow\",\n  \"projectId\": \"PROJECT_ID_HERE\",\n  \"assigneeIds\": [\"USER_ID_1\"],\n  \"dueDate\": \"2024-12-31\",\n  \"priority\": \"HIGH\",\n  \"status\": \"TODO\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tasks",
+							"host": ["{{baseUrl}}"],
+							"path": ["tasks"]
+						},
+						"description": "Create a new task. Requires SUPER_ADMIN, ADMIN, or PROJECT_MANAGER role."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Tasks",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tasks?page=1&limit=10&projectId=PROJECT_ID",
+							"host": ["{{baseUrl}}"],
+							"path": ["tasks"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "projectId",
+									"value": "PROJECT_ID",
+									"description": "Filter by project ID",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get paginated list of tasks. Public endpoint with optional filters."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Task By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tasks/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["tasks", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "TASK_ID_HERE"
+								}
+							]
+						},
+						"description": "Get task details by ID. Public endpoint."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Task",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Updated Task Title\",\n  \"description\": \"Updated description\",\n  \"status\": \"IN_PROGRESS\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tasks/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["tasks", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "TASK_ID_HERE"
+								}
+							]
+						},
+						"description": "Update task details. Requires SUPER_ADMIN, ADMIN, or PROJECT_MANAGER role."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Task",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tasks/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["tasks", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "TASK_ID_HERE"
+								}
+							]
+						},
+						"description": "Soft delete a task. Requires SUPER_ADMIN, ADMIN, or PROJECT_MANAGER role."
+					},
+					"response": []
+				},
+				{
+					"name": "Add Review to Task",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"comment\": \"Great work on this task!\",\n  \"rating\": 5\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tasks/:id/reviews",
+							"host": ["{{baseUrl}}"],
+							"path": ["tasks", ":id", "reviews"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "TASK_ID_HERE"
+								}
+							]
+						},
+						"description": "Add a review/comment to a task. Requires SUPER_ADMIN, ADMIN, or PROJECT_MANAGER role."
+					},
+					"response": []
+				},
+				{
+					"name": "Add Assignees to Task",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"assigneeIds\": [\"USER_ID_1\", \"USER_ID_2\"]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tasks/:id/assignees",
+							"host": ["{{baseUrl}}"],
+							"path": ["tasks", ":id", "assignees"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "TASK_ID_HERE"
+								}
+							]
+						},
+						"description": "Add assignees to a task. Requires SUPER_ADMIN, ADMIN, or PROJECT_MANAGER role."
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Assignees from Task",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"assigneeIds\": [\"USER_ID_1\"]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tasks/:id/assignees",
+							"host": ["{{baseUrl}}"],
+							"path": ["tasks", ":id", "assignees"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "TASK_ID_HERE"
+								}
+							]
+						},
+						"description": "Remove assignees from a task. Requires SUPER_ADMIN, ADMIN, or PROJECT_MANAGER role."
+					},
+					"response": []
+				},
+				{
+					"name": "Change Task Status",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"IN_PROGRESS\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tasks/:id/status",
+							"host": ["{{baseUrl}}"],
+							"path": ["tasks", ":id", "status"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "TASK_ID_HERE"
+								}
+							]
+						},
+						"description": "Change task status. Requires SUPER_ADMIN, ADMIN, or PROJECT_MANAGER role."
+					},
+					"response": []
+				},
+				{
+					"name": "Change Task Priority",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"priority\": \"HIGH\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tasks/:id/priority",
+							"host": ["{{baseUrl}}"],
+							"path": ["tasks", ":id", "priority"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "TASK_ID_HERE"
+								}
+							]
+						},
+						"description": "Change task priority. Requires SUPER_ADMIN, ADMIN, or PROJECT_MANAGER role."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Notifications",
+			"item": [
+				{
+					"name": "Create Notification",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"recipientId\": \"USER_ID_HERE\",\n  \"title\": \"New Task Assigned\",\n  \"message\": \"You have been assigned a new task\",\n  \"type\": \"TASK_ASSIGNED\",\n  \"channel\": [\"IN_APP\", \"EMAIL\"],\n  \"metadata\": {\n    \"taskId\": \"TASK_ID_HERE\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/notifications",
+							"host": ["{{baseUrl}}"],
+							"path": ["notifications"]
+						},
+						"description": "Create a notification. Sender ID is automatically set from authenticated user. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Bulk Notifications",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"recipientIds\": [\"USER_ID_1\", \"USER_ID_2\"],\n  \"title\": \"Team Announcement\",\n  \"message\": \"Important team update\",\n  \"type\": \"ANNOUNCEMENT\",\n  \"channel\": [\"IN_APP\", \"EMAIL\"],\n  \"metadata\": {}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/notifications/bulk",
+							"host": ["{{baseUrl}}"],
+							"path": ["notifications", "bulk"]
+						},
+						"description": "Create multiple notifications at once. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Notifications",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/notifications?page=1&limit=50&type=TASK_ASSIGNED&status=UNREAD",
+							"host": ["{{baseUrl}}"],
+							"path": ["notifications"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "type",
+									"value": "TASK_ASSIGNED",
+									"description": "Filter by notification type",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "UNREAD",
+									"description": "Filter by status (UNREAD, READ)",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get all notifications with filters. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Notifications",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/notifications/my-notifications?limit=50&offset=0",
+							"host": ["{{baseUrl}}"],
+							"path": ["notifications", "my-notifications"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "offset",
+									"value": "0"
+								}
+							]
+						},
+						"description": "Get current user's notifications. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Unread Count",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/notifications/unread-count",
+							"host": ["{{baseUrl}}"],
+							"path": ["notifications", "unread-count"]
+						},
+						"description": "Get count of unread notifications for current user. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Notification By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/notifications/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["notifications", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "NOTIFICATION_ID_HERE"
+								}
+							]
+						},
+						"description": "Get notification details by ID. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Notification as Read",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/notifications/:id/read",
+							"host": ["{{baseUrl}}"],
+							"path": ["notifications", ":id", "read"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "NOTIFICATION_ID_HERE"
+								}
+							]
+						},
+						"description": "Mark a notification as read. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Mark All Notifications as Read",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/notifications/mark-all-read",
+							"host": ["{{baseUrl}}"],
+							"path": ["notifications", "mark-all-read"]
+						},
+						"description": "Mark all user notifications as read. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Notification",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/notifications/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["notifications", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "NOTIFICATION_ID_HERE"
+								}
+							]
+						},
+						"description": "Delete a notification. Requires CEO, SUPER_ADMIN, or DEV role."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Notification Stats",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/notifications/stats",
+							"host": ["{{baseUrl}}"],
+							"path": ["notifications", "stats"]
+						},
+						"description": "Get notification statistics. Requires SUPER_ADMIN, ADMIN, MANAGER, or DEV role."
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [""]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [""]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refreshToken",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
+

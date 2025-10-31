@@ -70,7 +70,7 @@ export const emailVerificationTemplate: EmailTemplateFunction<
 
     <div style="text-align: center; margin: 30px 0;">
       <p style="margin: 0; color: #666; font-size: 16px;">
-        Thank you for choosing <strong>${DEFAULT_COMPANY_BRANDING.companyName}</strong>!
+        Thank you for choosing <strong></strong>!
       </p>
     </div>
   `;
@@ -138,7 +138,7 @@ export const passwordResetTemplate: EmailTemplateFunction<PasswordResetData> = (
 
     <div style="text-align: center; margin: 30px 0;">
       <p style="margin: 0; color: #666; font-size: 16px;">
-        Thank you for choosing <strong>${DEFAULT_COMPANY_BRANDING.companyName}</strong>!
+        Thank you for choosing <strong></strong>!
       </p>
     </div>
   `;
@@ -204,7 +204,7 @@ export const adminCredentialsTemplate: EmailTemplateFunction<
 
     <div style="text-align: center; margin: 30px 0;">
       <p style="margin: 0; color: #666; font-size: 16px;">
-        Welcome to <strong>${DEFAULT_COMPANY_BRANDING.companyName}</strong>!
+        Welcome to <strong></strong>!
       </p>
     </div>
   `;

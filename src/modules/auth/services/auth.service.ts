@@ -164,7 +164,8 @@ export class AuthService {
       throw new ConflictException('Failed to update verification token');
     }
 
-    const verificationLink = `http://localhost:3000/screens/auth/verify-email?token=${emailVerificationToken}`;
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const verificationLink = `${frontendUrl}/verify-email?token=${emailVerificationToken}`;
     await this.authEmailService.sendEmailVerificationLink(
       updatedUser.email,
       verificationLink,
@@ -226,13 +227,18 @@ export class AuthService {
       };
     }
 
-    const payload = { sub: user._id?.toString() || user.id?.toString(), email: user.email, type: 'reset' };
+    const payload = {
+      sub: user._id?.toString() || user.id?.toString(),
+      email: user.email,
+      type: 'reset',
+    };
     const token = this.jwtService.sign(payload, { expiresIn: '24h' });
     user.passwordResetToken = token;
 
     user.passwordResetExpires = addMinutes(new Date(), 60); // 1 hour
     await user.save();
-    const resetLink = `http://localhost:3000/screens/auth/reset-password?token=${token}`;
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const resetLink = `${frontendUrl}/reset-password?token=${token}`;
     await this.authEmailService.sendPasswordResetLink(user.email, resetLink);
     return {
       message: 'If that email is registered, a reset link has been sent.',

@@ -82,7 +82,8 @@ export class UsersService extends BaseService<UserDocument, User> {
       // User exists but not verified: update token and resend email
       user.emailVerificationToken = emailVerificationToken;
       await user.save();
-      const verificationLink = `http://localhost:3000/screens/auth/verify-email?token=${emailVerificationToken}`;
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const verificationLink = `${frontendUrl}/verify-email?token=${emailVerificationToken}`;
       const template = emailVerificationTemplate({
         verificationLink,
         userEmail: inviteDto.email,
@@ -109,7 +110,8 @@ export class UsersService extends BaseService<UserDocument, User> {
       isEmailVerified: false,
       emailVerificationToken,
     });
-    const verificationLink = `http://localhost:3000/screens/auth/verify-email?token=${emailVerificationToken}`;
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const verificationLink = `${frontendUrl}/screens/auth/verify-email?token=${emailVerificationToken}`;
     const template = emailVerificationTemplate({
       verificationLink,
       userEmail: inviteDto.email,
