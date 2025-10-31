@@ -3,14 +3,15 @@ services:
     name: teamboard-backend
     env: node
     plan: starter
+    # Note: Starter plan has limited memory. If build fails, consider upgrading to Standard plan
     region: oregon
-    buildCommand: yarn install && NODE_OPTIONS='--max-old-space-size=2048' yarn build
+    buildCommand: yarn install && (yarn build:tsc || yarn build:memory || yarn build)
     startCommand: yarn start:prod
     envVars:
       - key: NODE_ENV
         value: production
       - key: NODE_OPTIONS
-        value: --max-old-space-size=2048 --expose-gc
+        value: --max-old-space-size=6144 --expose-gc
     healthCheckPath: /api/v1/health
     autoDeploy: true
 

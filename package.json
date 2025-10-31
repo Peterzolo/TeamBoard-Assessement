@@ -6,7 +6,9 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "NODE_OPTIONS='--max-old-space-size=2048' nest build",
+    "build": "node --max-old-space-size=6144 ./node_modules/@nestjs/cli/bin/nest.js build",
+    "build:memory": "node --max-old-space-size=8192 ./node_modules/@nestjs/cli/bin/nest.js build",
+    "build:tsc": "tsc -p tsconfig.build.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/main.ts",

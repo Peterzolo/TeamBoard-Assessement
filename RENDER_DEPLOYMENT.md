@@ -49,21 +49,45 @@ If not using `render.yaml`, configure in Render Dashboard:
 
 If you still get memory errors:
 
-1. **Increase memory in build command:**
-   Change `2048` to `4096` in `package.json` build script
+⚠️ **CRITICAL: Render Starter plan has very limited memory (often 512MB-1GB). The container memory is the limiting factor, not just Node.js heap size. You will likely need to upgrade to Standard plan (2GB RAM) for the build to succeed.**
 
-2. **Upgrade Render Plan:**
-   Consider upgrading from "Starter" to a higher tier with more memory
+1. **Upgrade Render Plan (RECOMMENDED):**
+   - Go to Render Dashboard → Your Service → Settings
+   - Change plan from "Starter" to "Standard" (2GB RAM) or higher
+   - This is often the only reliable solution
+
+2. **Alternative Build Approaches:**
+
+   **Option A: Use TypeScript compiler directly (lighter):**
+   ```bash
+   buildCommand: yarn install && yarn build:tsc
+   ```
+
+   **Option B: Clean build with cache clearing:**
+   ```bash
+   buildCommand: rm -rf dist node_modules/.cache && yarn install && yarn build:memory
+   ```
+
+   **Option C: Build in stages:**
+   ```bash
+   buildCommand: yarn install --frozen-lockfile && yarn build:memory || yarn build
+   ```
 
 3. **Optimize Build:**
-   - Ensure `.env` files are not included in build
+   - Ensure `.env` files are not included in build (check `.gitignore`)
    - Check `node_modules` size
-   - Consider using Render's cache for `node_modules`
+   - Enable Render's cache for `node_modules` in settings
+   - Remove unused dependencies
 
-4. **Alternative Build Command:**
-   ```bash
-   NODE_OPTIONS='--max-old-space-size=4096' nest build
-   ```
+4. **Reduce Memory Usage:**
+   - The build config already disables source maps and declarations
+   - Ensure `incremental: false` in `tsconfig.build.json`
+   - Check for large files in `src/` that don't need compilation
+
+5. **Check Render Service Limits:**
+   - Starter plan: ~512MB-1GB total memory
+   - Standard plan: ~2GB total memory  
+   - The Node.js memory allocation can't exceed container memory
 
 ### Production Runtime
 
