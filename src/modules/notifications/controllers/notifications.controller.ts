@@ -33,14 +33,11 @@ export class NotificationsController {
 
   @Post()
   @Roles(
-    UserRole.CEO,
     UserRole.SUPER_ADMIN,
     UserRole.ADMIN,
-    UserRole.MANAGER,
-    UserRole.STAFF,
-    UserRole.TECHNICIAN,
-    UserRole.ACCOUNT,
-    UserRole.DEV,
+    UserRole.PROJECT_MANAGER,
+    UserRole.TEAM_MEMBER,
+    UserRole.TEAM_LEAD,
   )
   async createNotification(
     @Body() createNotificationDto: CreateNotificationDto,
@@ -54,14 +51,11 @@ export class NotificationsController {
 
   @Get()
   @Roles(
-    UserRole.CEO,
     UserRole.SUPER_ADMIN,
     UserRole.ADMIN,
-    UserRole.MANAGER,
-    UserRole.STAFF,
-    UserRole.TECHNICIAN,
-    UserRole.ACCOUNT,
-    UserRole.DEV,
+    UserRole.PROJECT_MANAGER,
+    UserRole.TEAM_MEMBER,
+    UserRole.TEAM_LEAD,
   )
   getAllNotifications(
     @Query('page') page?: number,
@@ -87,14 +81,11 @@ export class NotificationsController {
 
   @Post('bulk')
   @Roles(
-    UserRole.CEO,
     UserRole.SUPER_ADMIN,
     UserRole.ADMIN,
-    UserRole.MANAGER,
-    UserRole.STAFF,
-    UserRole.TECHNICIAN,
-    UserRole.ACCOUNT,
-    UserRole.DEV,
+    UserRole.PROJECT_MANAGER,
+    UserRole.TEAM_MEMBER,
+    UserRole.TEAM_LEAD,
   )
   async createBulkNotifications(
     @Body() createBulkNotificationDto: CreateBulkNotificationDto,
@@ -110,14 +101,11 @@ export class NotificationsController {
 
   @Get('my-notifications')
   @Roles(
-    UserRole.CEO,
     UserRole.SUPER_ADMIN,
     UserRole.ADMIN,
-    UserRole.MANAGER,
-    UserRole.STAFF,
-    UserRole.TECHNICIAN,
-    UserRole.ACCOUNT,
-    UserRole.DEV,
+    UserRole.PROJECT_MANAGER,
+    UserRole.TEAM_MEMBER,
+    UserRole.TEAM_LEAD,
   )
   async getMyNotifications(
     @CurrentUser('_id') userId: string,
@@ -133,14 +121,11 @@ export class NotificationsController {
 
   @Get('unread-count')
   @Roles(
-    UserRole.CEO,
     UserRole.SUPER_ADMIN,
     UserRole.ADMIN,
-    UserRole.MANAGER,
-    UserRole.STAFF,
-    UserRole.TECHNICIAN,
-    UserRole.ACCOUNT,
-    UserRole.DEV,
+    UserRole.PROJECT_MANAGER,
+    UserRole.TEAM_MEMBER,
+    UserRole.TEAM_LEAD,
   )
   async getUnreadCount(@CurrentUser('_id') userId: string) {
     const count = await this.notificationService.getUnreadCount(userId);
@@ -149,14 +134,11 @@ export class NotificationsController {
 
   @Get(':id')
   @Roles(
-    UserRole.CEO,
     UserRole.SUPER_ADMIN,
     UserRole.ADMIN,
-    UserRole.MANAGER,
-    UserRole.STAFF,
-    UserRole.TECHNICIAN,
-    UserRole.ACCOUNT,
-    UserRole.DEV,
+    UserRole.PROJECT_MANAGER,
+    UserRole.TEAM_MEMBER,
+    UserRole.TEAM_LEAD,
   )
   getNotificationById(
     @Param('id') id: string,
@@ -168,14 +150,11 @@ export class NotificationsController {
 
   @Post(':id/read')
   @Roles(
-    UserRole.CEO,
     UserRole.SUPER_ADMIN,
     UserRole.ADMIN,
-    UserRole.MANAGER,
-    UserRole.STAFF,
-    UserRole.TECHNICIAN,
-    UserRole.ACCOUNT,
-    UserRole.DEV,
+    UserRole.PROJECT_MANAGER,
+    UserRole.TEAM_MEMBER,
+    UserRole.TEAM_LEAD,
   )
   @HttpCode(HttpStatus.OK)
   async markAsRead(
@@ -189,14 +168,11 @@ export class NotificationsController {
   // comment
   @Post('mark-all-read')
   @Roles(
-    UserRole.CEO,
     UserRole.SUPER_ADMIN,
     UserRole.ADMIN,
-    UserRole.MANAGER,
-    UserRole.STAFF,
-    UserRole.TECHNICIAN,
-    UserRole.ACCOUNT,
-    UserRole.DEV,
+    UserRole.PROJECT_MANAGER,
+    UserRole.TEAM_MEMBER,
+    UserRole.TEAM_LEAD,
   )
   @HttpCode(HttpStatus.OK)
   async markAllAsRead(@CurrentUser('_id') userId: string) {
@@ -208,7 +184,7 @@ export class NotificationsController {
   }
 
   @Delete(':id')
-  @Roles(UserRole.CEO, UserRole.SUPER_ADMIN, UserRole.DEV)
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
   @HttpCode(HttpStatus.OK)
   async deleteNotification(
     @Param('id') id: string,
@@ -219,7 +195,7 @@ export class NotificationsController {
   }
 
   @Get('stats')
-  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.MANAGER, UserRole.DEV)
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.PROJECT_MANAGER)
   getNotificationStats(@CurrentUser('_id') userId: string) {
     return this.notificationService.getNotificationStats();
   }

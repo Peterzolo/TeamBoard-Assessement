@@ -16,7 +16,7 @@ export class BootstrapService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    const superAdminEmail = 'petersolomon704@gmail.com';
+    const superAdminEmail = 'super-admin@test.com';
     const existing = await this.usersService.findOne({
       email: superAdminEmail,
     });

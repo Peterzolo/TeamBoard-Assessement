@@ -25,6 +25,7 @@ export class ResendProvider extends BaseEmailProvider {
 
       // Dynamically import Resend to avoid dependency issues if not installed
       try {
+        // @ts-ignore - Resend package is optional
         const { Resend } = await import('resend');
         this.resendClient = new Resend(apiKey);
       } catch (importError) {

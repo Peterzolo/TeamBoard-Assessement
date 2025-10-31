@@ -25,8 +25,6 @@ import { NotificationGateway } from '../gateways/notification.gateway';
 import { EmailService } from '../../../core/services/email.service';
 import { UserRole } from '../../users/entities/user.entity';
 import { IUserLookupService } from '../../../core/interfaces/user-lookup.interface';
-import { Inject } from '@nestjs/common';
-import { UserDocument } from '../../users/entities/user.entity';
 
 @Injectable()
 export class NotificationService {

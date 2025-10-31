@@ -19,10 +19,10 @@ export class NotificationTemplateSeeder {
 
   async seedTemplates(): Promise<void> {
     const templates = [
-      // Work Order Templates
+      // Work Order Templates (using SERVICE_REQUEST_CREATED as equivalent)
       {
         name: 'work-order-created-email',
-        type: NotificationType.WORK_ORDER_CREATED,
+        type: NotificationType.SERVICE_REQUEST_CREATED,
         channel: NotificationChannel.EMAIL,
         subject: 'New Work Order Created - {{workOrderNumber}}',
         content: `
@@ -52,7 +52,7 @@ Inventory Management System
       },
       {
         name: 'work-order-assigned-email',
-        type: NotificationType.WORK_ORDER_ASSIGNED,
+        type: NotificationType.SERVICE_REQUEST_UPDATED,
         channel: NotificationChannel.EMAIL,
         subject: 'Work Order Assigned to You - {{workOrderNumber}}',
         content: `
@@ -87,7 +87,7 @@ Inventory Management System
       },
       {
         name: 'work-order-completed-email',
-        type: NotificationType.WORK_ORDER_COMPLETED,
+        type: NotificationType.SERVICE_REQUEST_COMPLETED,
         channel: NotificationChannel.EMAIL,
         subject: 'Work Order Completed - {{workOrderNumber}}',
         content: `
@@ -114,10 +114,10 @@ Inventory Management System
         status: TemplateStatus.ACTIVE,
         description: 'Email template for work order completion',
       },
-      // Low Stock Templates
+      // Low Stock Templates (using PAYMENT_CREATED as placeholder)
       {
         name: 'low-stock-email',
-        type: NotificationType.LOW_STOCK,
+        type: NotificationType.PAYMENT_CREATED,
         channel: NotificationChannel.EMAIL,
         subject: 'Low Stock Alert - {{productName}}',
         content: `
@@ -139,7 +139,7 @@ Inventory Management System
       },
       {
         name: 'out-of-stock-email',
-        type: NotificationType.OUT_OF_STOCK,
+        type: NotificationType.PAYMENT_REJECTED,
         channel: NotificationChannel.EMAIL,
         subject: 'URGENT: Out of Stock - {{productName}}',
         content: `
@@ -158,10 +158,10 @@ Inventory Management System
         status: TemplateStatus.ACTIVE,
         description: 'Email template for out of stock alerts',
       },
-      // Order Templates
+      // Order Templates (using BILLING_DOCUMENT_CREATED as placeholder)
       {
         name: 'new-order-email',
-        type: NotificationType.NEW_ORDER,
+        type: NotificationType.BILLING_DOCUMENT_CREATED,
         channel: NotificationChannel.EMAIL,
         subject: 'New Order Received - {{orderNumber}}',
         content: `
